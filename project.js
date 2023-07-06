@@ -142,12 +142,59 @@ const printRows = (rows) => {
         }
         console.log(rowString);
     }
+};
+
+const getWinnings = (rows , bet , lines) => {
+    let winnings = 0;
+
+    for(let row = 0 ; row < lines ; row++)
+    {
+        const symbols = rows[row];
+        let allSame = true;
+
+        for (const symbol of symbols) {
+            if (symbol != symbols[0]) {
+                allSame = false;
+                break;
+            }
+        }
+
+        if (allSame) {
+            winnings += bet * SYMBOLS_VALUE[symbols[0]]
+
+        }
+    }
+
+    return winnings;
 }
 
+const game = () => {
 
-let balance = deposit()
-const lines = numberOfLines()
-const bet = getBet(balance,lines)
-const reels = Spin();
-const rows = transpose(reels);
-printRows(rows);
+    let balance = deposit()
+
+    while (true) {
+
+        console.log("You hava a balance of $" + balance);
+        const lines = numberOfLines()
+        const bet = getBet(balance,lines)
+        balance -= bet * lines;
+        const reels = Spin();
+        const rows = transpose(reels);
+        printRows(rows);
+        const winnings = getWinnings(rows, bet , lines);
+        balance += winnings;
+        console.log("You won, $" + winnings.toString())
+
+
+        if ( balance <= 0 )
+        {
+            console.log("you ran out of money!");
+            break;
+        }
+
+        const playAgain = prompt("Do you want to play again (y/n) ? ");
+        if (playAgain != "y") break;
+    }
+}
+
+game();
